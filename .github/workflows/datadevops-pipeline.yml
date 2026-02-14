@@ -256,13 +256,18 @@ jobs:
     - name: Terraform Plan
       working-directory: terraform/aws/glue
       run: |
-        terraform plan -var-file="../../../envconfig/aws/${{ env.ENVIRONMENT }}.tfvars" -out=tfplan
+        # Create a unique plan file for this run
+        PLAN_FILE="tfplan-${{ github.run_id }}-${{ github.run_attempt }}"
+        terraform plan -var-file="../../../envconfig/aws/${{ env.ENVIRONMENT }}.tfvars" -out="${PLAN_FILE}"
+        echo "PLAN_FILE=${PLAN_FILE}" >> $GITHUB_ENV
     
     - name: Terraform Apply
       working-directory: terraform/aws/glue
       run: |
         echo "🚀 Applying Terraform changes..."
-        terraform apply -auto-approve tfplan
+        # Note: auto-approve is safe here because environment protection (line 204-205)
+        # allows configuration of manual approval gates before this job runs
+        terraform apply -auto-approve "${{ env.PLAN_FILE }}"
         echo "✅ Terraform apply completed successfully"
     
     - name: Terraform Output
@@ -319,13 +324,16 @@ jobs:
     - name: Terraform Plan
       working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
       run: |
-        terraform plan -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars" -out=tfplan
+        # Create a unique plan file for this run
+        PLAN_FILE="tfplan-${{ github.run_id }}-${{ github.run_attempt }}"
+        terraform plan -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars" -out="${PLAN_FILE}"
+        echo "PLAN_FILE=${PLAN_FILE}" >> $GITHUB_ENV
     
     - name: Terraform Apply
       working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
       run: |
         echo "🚀 Applying Terraform changes..."
-        terraform apply -auto-approve tfplan
+        terraform apply -auto-approve "${{ env.PLAN_FILE }}"
         echo "✅ Terraform apply completed successfully"
     
     - name: Terraform Output
