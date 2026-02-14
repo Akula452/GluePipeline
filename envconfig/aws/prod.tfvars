@@ -4,9 +4,7 @@
 # AWS Configuration
 aws_region = "us-east-1"
 # AWS Account ID for production environment
-# IMPORTANT: Replace '000000000000' with your actual AWS Account ID before deployment
-# The placeholder value will be rejected by terraform validation
-aws_account_id = "000000000000"
+aws_account_id = "516993964265"
 
 # Project Configuration
 project_name = "gluepipeline"

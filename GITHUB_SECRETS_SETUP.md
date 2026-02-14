@@ -31,12 +31,19 @@ The following secrets must be configured in your GitHub repository settings:
 - **Required**: Yes
 - **Used in**: Deploy and Terraform deployment jobs in CI/CD pipeline
 
-### 3. AWS_REGION (Optional)
+### 3. AWS_ACCOUNT_ID
+- **Description**: Your 12-digit AWS Account ID (e.g., 123456789012)
+- **Required**: Yes
+- **Used in**: Terraform deployment for resource naming and IAM role ARNs
+- **Format**: Must be exactly 12 digits
+- **Example**: `123456789012`
+
+### 4. AWS_REGION (Optional)
 - **Description**: AWS region for your Glue operations
 - **Required**: No (defaults to `us-east-1`)
 - **Example values**: `us-east-1`, `us-west-2`, `eu-west-1`, etc.
 
-### 4. DB_PASSWORD
+### 5. DB_PASSWORD
 - **Description**: Database password for Glue SQL connections
 - **Required**: Yes (for Terraform deployments that include database connections)
 - **Used in**: Terraform deployment job for configuring Glue database connections
@@ -63,7 +70,16 @@ The following secrets must be configured in your GitHub repository settings:
    - Never share this value or commit it to the repository
 4. Click **Add secret**
 
-### Step 4: Add AWS_REGION (Optional)
+### Step 4: Add AWS_ACCOUNT_ID
+1. Click **New repository secret** again
+2. Enter the secret name: `AWS_ACCOUNT_ID`
+3. Enter your 12-digit AWS Account ID (e.g., `123456789012`)
+   - Find your AWS Account ID in the AWS Console (top-right corner)
+   - Must be exactly 12 digits
+   - Example: `123456789012`
+4. Click **Add secret**
+
+### Step 5: Add AWS_REGION (Optional)
 1. Click **New repository secret** again
 2. Enter the secret name: `AWS_REGION`
 3. Enter your preferred AWS region (e.g., `us-east-1`)
@@ -123,6 +139,7 @@ Use the GitHub UI (Settings → Secrets and variables → Actions) to add these 
 |------------|-------------|----------------|----------|
 | `AWS_ACCESS_KEY_ID` | Your AWS Access Key ID | `AKIA...` (20 characters) | ✅ Yes |
 | `AWS_SECRET_ACCESS_KEY` | Your AWS Secret Access Key | 40 characters | ✅ Yes |
+| `AWS_ACCOUNT_ID` | Your 12-digit AWS Account ID | `123456789012` | ✅ Yes |
 | `AWS_REGION` | AWS region for operations | `us-east-1`, `us-west-2`, etc. | ❌ No (defaults to `us-east-1`) |
 | `DB_PASSWORD` | Database password for Glue connections | Secure password string | ✅ Yes (for Terraform) |
 
