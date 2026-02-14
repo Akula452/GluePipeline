@@ -178,11 +178,44 @@ GluePipeline/
 ├── .github/
 │   └── workflows/
 │       └── datadevops-pipeline.yml # CI/CD workflow
-└── examples/
-    ├── example-config.json         # Example configuration
-    ├── demo.sh                     # Demo script
-    └── docker-usage.sh             # Docker examples
+├── examples/
+│   ├── example-config.json         # Example configuration
+│   ├── demo.sh                     # Demo script
+│   └── docker-usage.sh             # Docker examples
+└── terraform/
+    └── aws/
+        ├── main.tf                 # Main Terraform configuration
+        ├── variables.tf            # Variable definitions
+        ├── outputs.tf              # Output values
+        ├── terraform.tfvars.example # Example variables file
+        ├── example_glue_script.py  # Example Glue ETL script
+        └── README.md               # Terraform documentation
 ```
+
+## ☁️ Infrastructure as Code (Terraform)
+
+The `terraform/aws/` directory contains Terraform configuration for deploying AWS Glue infrastructure:
+
+### Features
+- **AWS Glue Job**: ETL job with SQL connection support
+- **SQL Connection**: JDBC connection to databases (PostgreSQL, MySQL, SQL Server, etc.)
+- **S3 Buckets**: Storage for scripts and temporary files
+- **IAM Role**: Execution role with appropriate permissions
+- **CloudWatch Logs**: Job execution logging
+- **Glue Trigger**: Optional scheduled job execution
+
+### Quick Start with Terraform
+
+```bash
+cd terraform/aws
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with your configuration
+terraform init
+terraform plan
+terraform apply
+```
+
+See [terraform/aws/README.md](terraform/aws/README.md) for detailed documentation.
 
 ## 🌍 Environment Variables
 
