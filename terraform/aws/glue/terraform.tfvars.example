@@ -2,7 +2,8 @@
 # Copy this file to terraform.tfvars and customize for your environment
 
 # AWS Configuration
-aws_region = "us-east-1"
+aws_region     = "us-east-1"
+aws_account_id = "123456789012"  # Replace with your AWS Account ID
 
 # Project Configuration
 project_name = "gluepipeline"
