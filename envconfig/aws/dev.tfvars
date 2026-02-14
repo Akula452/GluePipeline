@@ -4,7 +4,8 @@
 # AWS Configuration
 aws_region = "us-east-1"
 # AWS Account ID for development environment
-# IMPORTANT: Replace with your actual AWS Account ID before deployment
+# IMPORTANT: Replace '000000000000' with your actual AWS Account ID before deployment
+# The placeholder value will be rejected by terraform validation
 aws_account_id = "000000000000"
 
 # Project Configuration
