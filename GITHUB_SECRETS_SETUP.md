@@ -31,7 +31,7 @@ The following secrets must be configured in your GitHub repository settings:
 ### Step 2: Add New Repository Secret
 1. Click the **New repository secret** button
 2. Enter the secret name: `AWS_ACCESS_KEY_ID`
-3. Enter the secret value: `AKIAXQXZ53DUYVFKS4EW`
+3. Enter the secret value: Your AWS Access Key ID (e.g., starts with `AKIA...`)
 4. Click **Add secret**
 
 ### Step 3: Add AWS_SECRET_ACCESS_KEY
