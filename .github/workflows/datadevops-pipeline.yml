@@ -6,6 +6,22 @@ on:
   pull_request:
     branches: [ main, dev, int ]
   workflow_dispatch:
+    inputs:
+      terraform_module:
+        description: 'Terraform module to deploy'
+        required: true
+        type: choice
+        options:
+          - glue
+        default: 'glue'
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+        default: 'dev'
 
 env:
   DOCKER_IMAGE: gluepipeline-cli
@@ -176,3 +192,62 @@ jobs:
         echo "Branch: ${{ github.ref_name }}"
         echo "Commit: ${{ github.sha }}"
         echo "Deployment ready"
+
+  # Terraform deployment job (manual trigger only)
+  terraform-deploy:
+    name: Deploy Terraform Infrastructure
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+    
+    # Configure AWS credentials as repository secrets:
+    # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+      TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
+    
+    - name: Display deployment configuration
+      run: |
+        echo "Terraform Module: ${{ github.event.inputs.terraform_module }}"
+        echo "Environment: ${{ github.event.inputs.environment }}"
+        echo "Working Directory: terraform/aws/${{ github.event.inputs.terraform_module }}"
+        echo ""
+        echo "⚠️  Note: Ensure AWS credentials are configured as repository secrets:"
+        echo "  - AWS_ACCESS_KEY_ID"
+        echo "  - AWS_SECRET_ACCESS_KEY"
+        echo "  - AWS_REGION (optional, defaults to us-east-1)"
+        echo "  - DB_PASSWORD (for database connection)"
+    
+    - name: Terraform Init
+      working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
+      run: terraform init
+    
+    - name: Terraform Validate
+      working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
+      run: terraform validate
+    
+    - name: Terraform Plan
+      working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
+      run: |
+        terraform plan -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars" -out=tfplan
+    
+    - name: Terraform Plan Summary
+      working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
+      run: |
+        echo "✅ Terraform plan completed successfully"
+        echo "📋 Review the plan above before applying"
+        echo ""
+        echo "⚠️  Note: This workflow only runs 'terraform plan' for safety."
+        echo "To apply changes, you need to manually run 'terraform apply' with proper AWS credentials and approvals."
