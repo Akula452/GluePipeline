@@ -211,6 +211,9 @@ jobs:
       contents: read
     
     # Configure environment-based approval for apply and destroy actions
+    # Environment name is dynamically set based on action:
+    # - For 'apply' and 'destroy': requires approval via environment terraform-{action}-{env}
+    # - For 'plan': empty environment name bypasses approval (safe read-only operation)
     environment:
       name: ${{ github.event.inputs.terraform_action != 'plan' && format('terraform-{0}-{1}', github.event.inputs.terraform_action, github.event.inputs.environment) || '' }}
     
@@ -256,6 +259,9 @@ jobs:
       if: github.event.inputs.terraform_action == 'plan'
       working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
       run: |
+        # Note: Plan output is not saved to file for plan-only action
+        # This is intentional as the plan is for review purposes only
+        # For apply action, plan is saved and then applied to ensure consistency
         terraform plan -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars"
     
     - name: Terraform Plan Summary
