@@ -2,9 +2,9 @@ name: DataDevOps Pipeline CI/CD
 
 on:
   push:
-    branches: [ main, dev, 'copilot/**' ]
+    branches: [ main, dev, int, 'copilot/**' ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, dev, int ]
   workflow_dispatch:
 
 env:
@@ -157,7 +157,7 @@ jobs:
     
     - name: Deploy notification
       run: |
-        echo "🚀 Deploying GluePipeline CLI"
+        echo "Deploying GluePipeline CLI"
         echo "Branch: ${{ github.ref_name }}"
         echo "Commit: ${{ github.sha }}"
-        echo "✅ Deployment ready"
+        echo "Deployment ready"
