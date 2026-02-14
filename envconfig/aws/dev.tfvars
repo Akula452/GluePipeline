@@ -4,8 +4,8 @@
 # AWS Configuration
 aws_region = "us-east-1"
 # AWS Account ID for development environment
-# Replace with your actual AWS Account ID
-aws_account_id = "123456789012"
+# IMPORTANT: Replace with your actual AWS Account ID before deployment
+aws_account_id = "000000000000"
 
 # Project Configuration
 project_name = "gluepipeline"
