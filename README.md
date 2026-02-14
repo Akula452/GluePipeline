@@ -41,7 +41,7 @@ chmod +x cli.py
 docker build -t gluepipeline-cli:latest .
 
 # Or use Docker Compose
-docker-compose build
+docker compose build
 ```
 
 ## 📖 Usage
@@ -86,14 +86,14 @@ docker run --rm -v $(pwd)/workspace:/workspace gluepipeline-cli:latest list
 
 ```bash
 # Run CLI commands
-docker-compose run --rm gluepipeline-cli init --name my-pipeline --environment dev
+docker compose run --rm gluepipeline-cli init --name my-pipeline --environment dev
 
-docker-compose run --rm gluepipeline-cli add-job --job-name etl-job --script s3://bucket/script.py
+docker compose run --rm gluepipeline-cli add-job --job-name etl-job --script s3://bucket/script.py
 
-docker-compose run --rm gluepipeline-cli list
+docker compose run --rm gluepipeline-cli list
 
 # Use development container
-docker-compose run --rm gluepipeline-dev /bin/bash
+docker compose run --rm gluepipeline-dev /bin/bash
 ```
 
 ## 📚 Commands
