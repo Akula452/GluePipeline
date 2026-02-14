@@ -145,6 +145,8 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     permissions:
       contents: read
+    environment:
+      name: ${{ github.ref_name }}
     
     steps:
     - name: Checkout code
@@ -155,7 +157,20 @@ jobs:
       with:
         name: docker-image
     
+    - name: Configure AWS Credentials
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+      run: |
+        echo "AWS credentials configured from GitHub Secrets"
+        echo "AWS Region: ${AWS_REGION}"
+    
     - name: Deploy notification
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
       run: |
         echo "Deploying GluePipeline CLI"
         echo "Branch: ${{ github.ref_name }}"

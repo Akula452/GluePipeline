@@ -165,6 +165,13 @@ The repository includes a GitHub Actions workflow (`.github/workflows/datadevops
 - Pull requests to `main` or `dev`
 - Manual workflow dispatch
 
+### AWS Credentials Configuration
+
+The workflow uses AWS credentials stored as GitHub Secrets for secure deployment. See [GITHUB_SECRETS_SETUP.md](GITHUB_SECRETS_SETUP.md) for detailed instructions on configuring:
+- `AWS_ACCESS_KEY_ID` - AWS Access Key ID
+- `AWS_SECRET_ACCESS_KEY` - AWS Secret Access Key  
+- `AWS_REGION` - AWS Region (optional, defaults to us-east-1)
+
 ## 📂 Project Structure
 
 ```
