@@ -7,13 +7,13 @@ variable "aws_region" {
 }
 
 variable "aws_account_id" {
-  description = "AWS Account ID where resources will be created"
+  description = "AWS Account ID where resources will be created (must be provided via tfvars file)"
   type        = string
   default     = ""
   
   validation {
-    condition     = can(regex("^[0-9]{12}$", var.aws_account_id)) || var.aws_account_id == ""
-    error_message = "AWS Account ID must be a 12-digit number."
+    condition     = can(regex("^[0-9]{12}$", var.aws_account_id))
+    error_message = "AWS Account ID must be a 12-digit number. Please provide it via the tfvars file."
   }
 }
 
