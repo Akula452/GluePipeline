@@ -2,6 +2,21 @@
 
 This document explains how to configure AWS credentials as GitHub Secrets for the GluePipeline CI/CD workflow.
 
+## 🚨 CRITICAL SECURITY WARNING
+
+**NEVER commit AWS credentials to your repository!**
+
+- AWS Access Keys and Secret Keys are **highly sensitive**
+- Always use GitHub Secrets for storing credentials
+- Never share credentials in plain text or public channels
+- Regularly rotate your AWS credentials
+- Use AWS IAM best practices and least privilege principles
+
+If you accidentally commit credentials, **immediately**:
+1. Rotate the credentials in AWS IAM
+2. Remove them from Git history
+3. Review AWS CloudTrail for unauthorized access
+
 ## Required Secrets
 
 The following secrets must be configured in your GitHub repository settings:
@@ -37,7 +52,10 @@ The following secrets must be configured in your GitHub repository settings:
 ### Step 3: Add AWS_SECRET_ACCESS_KEY
 1. Click **New repository secret** again
 2. Enter the secret name: `AWS_SECRET_ACCESS_KEY`
-3. Enter your AWS Secret Access Key value
+3. Enter your AWS Secret Access Key value (the secret key that corresponds to your Access Key ID)
+   - **CRITICAL**: This is extremely sensitive - keep it secret!
+   - Example format: A 40-character string of letters, numbers, and special characters
+   - Never share this value or commit it to the repository
 4. Click **Add secret**
 
 ### Step 4: Add AWS_REGION (Optional)
@@ -91,3 +109,15 @@ For more information, see:
 - [GitHub Actions Encrypted Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
 - [AWS IAM Best Practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
 - [GluePipeline README](README.md)
+
+## Quick Reference: Secrets to Add
+
+Use the GitHub UI (Settings → Secrets and variables → Actions) to add these secrets:
+
+| Secret Name | Description | Example Format | Required |
+|------------|-------------|----------------|----------|
+| `AWS_ACCESS_KEY_ID` | Your AWS Access Key ID | `AKIA...` (20 characters) | ✅ Yes |
+| `AWS_SECRET_ACCESS_KEY` | Your AWS Secret Access Key | 40 characters | ✅ Yes |
+| `AWS_REGION` | AWS region for operations | `us-east-1`, `us-west-2`, etc. | ❌ No (defaults to `us-east-1`) |
+
+**Remember**: These secrets are available to workflows on ALL branches (main, dev, int, copilot/**, etc.) once added to the repository settings.
