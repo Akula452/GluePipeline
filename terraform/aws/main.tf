@@ -116,10 +116,13 @@ resource "aws_glue_connection" "sql_connection" {
   
   connection_type = "JDBC"
   
-  physical_connection_requirements {
-    availability_zone      = var.availability_zone
-    security_group_id_list = var.security_group_ids
-    subnet_id              = var.subnet_id
+  dynamic "physical_connection_requirements" {
+    for_each = var.subnet_id != null && length(var.security_group_ids) > 0 ? [1] : []
+    content {
+      availability_zone      = var.availability_zone
+      security_group_id_list = var.security_group_ids
+      subnet_id              = var.subnet_id
+    }
   }
   
   description = "SQL database connection for Glue jobs"

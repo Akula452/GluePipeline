@@ -101,17 +101,15 @@ variable "additional_job_arguments" {
 
 # SQL Connection Configuration
 variable "jdbc_connection_url" {
-  description = "JDBC connection URL for the database"
+  description = "JDBC connection URL for the database (e.g., jdbc:postgresql://host:5432/db)"
   type        = string
   sensitive   = true
-  default     = "jdbc:postgresql://localhost:5432/mydb"
 }
 
 variable "db_username" {
   description = "Database username"
   type        = string
   sensitive   = true
-  default     = "admin"
 }
 
 variable "db_password" {
@@ -121,21 +119,21 @@ variable "db_password" {
 }
 
 variable "availability_zone" {
-  description = "Availability zone for the Glue connection"
+  description = "Availability zone for the Glue connection (must be in the same region as aws_region)"
   type        = string
-  default     = "us-east-1a"
+  default     = null
 }
 
 variable "security_group_ids" {
-  description = "List of security group IDs for the Glue connection"
+  description = "List of security group IDs for the Glue connection (required for database connections)"
   type        = list(string)
   default     = []
 }
 
 variable "subnet_id" {
-  description = "Subnet ID for the Glue connection"
+  description = "Subnet ID for the Glue connection (required for database connections)"
   type        = string
-  default     = ""
+  default     = null
 }
 
 # Scheduling Configuration
