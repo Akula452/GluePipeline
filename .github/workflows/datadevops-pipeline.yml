@@ -22,6 +22,15 @@ on:
           - dev
           - prod
         default: 'dev'
+      terraform_action:
+        description: 'Terraform action to perform'
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+        default: 'plan'
 
 env:
   DOCKER_IMAGE: gluepipeline-cli
@@ -284,6 +293,13 @@ jobs:
     permissions:
       contents: read
     
+    # Configure environment-based approval for apply and destroy actions
+    # Environment name is dynamically set based on action:
+    # - For 'apply' and 'destroy': requires approval via environment terraform-{action}-{env}
+    # - For 'plan': empty environment name bypasses approval (safe read-only operation)
+    environment:
+      name: ${{ github.event.inputs.terraform_action != 'plan' && format('terraform-{0}-{1}', github.event.inputs.terraform_action, github.event.inputs.environment) || '' }}
+    
     # Configure AWS credentials as repository secrets:
     # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
     env:
@@ -301,8 +317,9 @@ jobs:
       with:
         terraform_version: 1.5.0
     
-    - name: Display deployment configuration
+    - name: Display configuration
       run: |
+        echo "Terraform Action: ${{ github.event.inputs.terraform_action }}"
         echo "Terraform Module: ${{ github.event.inputs.terraform_module }}"
         echo "Environment: ${{ github.event.inputs.environment }}"
         echo "Working Directory: terraform/aws/${{ github.event.inputs.terraform_module }}"
@@ -322,6 +339,7 @@ jobs:
       run: terraform validate
     
     - name: Terraform Plan
+      if: github.event.inputs.terraform_action == 'plan'
       working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
       run: |
         # Create a unique plan file for this run
