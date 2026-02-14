@@ -30,25 +30,26 @@ terraform/aws/
 ├── outputs.tf                 # Output values
 ├── terraform.tfvars.example   # Example variables file
 └── README.md                  # This file
+
+envconfig/aws/
+├── dev.tfvars                 # Development environment variables
+└── prod.tfvars                # Production environment variables
 ```
 
 ## Quick Start
 
-### 1. Configure Variables
+### 1. Choose Your Environment Configuration
 
-Copy the example variables file and customize it:
+Environment-specific configuration files are pre-created in `envconfig/aws/`:
+- **Development**: `envconfig/aws/dev.tfvars`
+- **Production**: `envconfig/aws/prod.tfvars`
 
-```bash
-cd terraform/aws
-cp terraform.tfvars.example terraform.tfvars
-```
-
-Edit `terraform.tfvars` with your specific values:
+Edit the appropriate file for your environment with your specific values:
 
 ```hcl
 aws_region   = "us-east-1"
 project_name = "my-glue-project"
-environment  = "dev"
+environment  = "dev"  # or "prod"
 
 # SQL Connection
 jdbc_connection_url = "jdbc:postgresql://db.example.com:5432/mydb"
@@ -56,6 +57,8 @@ db_username         = "admin"
 security_group_ids  = ["sg-xxxxxxxxx"]
 subnet_id           = "subnet-xxxxxxxxx"
 ```
+
+**Note**: You can also create custom environment files (e.g., `staging.tfvars`) following the same pattern.
 
 ### 2. Set Database Password
 
@@ -70,23 +73,36 @@ Or use AWS Secrets Manager (preferred for production).
 ### 3. Initialize Terraform
 
 ```bash
+cd terraform/aws
 terraform init
 ```
 
 ### 4. Plan Deployment
 
-Review the resources that will be created:
+Review the resources that will be created for your chosen environment:
 
+**For Development:**
 ```bash
-terraform plan
+terraform plan -var-file="../../envconfig/aws/dev.tfvars"
+```
+
+**For Production:**
+```bash
+terraform plan -var-file="../../envconfig/aws/prod.tfvars"
 ```
 
 ### 5. Apply Configuration
 
 Deploy the infrastructure:
 
+**For Development:**
 ```bash
-terraform apply
+terraform apply -var-file="../../envconfig/aws/dev.tfvars"
+```
+
+**For Production:**
+```bash
+terraform apply -var-file="../../envconfig/aws/prod.tfvars"
 ```
 
 ### 6. Upload Glue Script
@@ -293,13 +309,52 @@ aws logs tail $LOG_GROUP --follow
 
 ## Cleanup
 
-To destroy all created resources:
+To destroy all created resources for a specific environment:
 
+**For Development:**
 ```bash
-terraform destroy
+terraform destroy -var-file="../../envconfig/aws/dev.tfvars"
+```
+
+**For Production:**
+```bash
+terraform destroy -var-file="../../envconfig/aws/prod.tfvars"
 ```
 
 **Warning**: This will delete all resources including S3 buckets. Ensure you have backups of any important data.
+
+## Environment Configuration
+
+### Using Pre-configured Environments
+
+The project includes pre-configured environment files in `envconfig/aws/`:
+- **dev.tfvars**: Development environment with minimal resources
+- **prod.tfvars**: Production environment with enhanced capacity and monitoring
+
+### Creating Custom Environments
+
+You can create additional environment configurations:
+
+1. Create a new file: `envconfig/aws/staging.tfvars`
+2. Copy the structure from `dev.tfvars` or `prod.tfvars`
+3. Customize values for your environment
+4. Deploy using: `terraform apply -var-file="../../envconfig/aws/staging.tfvars"`
+
+### Environment Differences
+
+**Development (dev.tfvars)**:
+- Smaller worker type (G.1X)
+- Fewer workers (2)
+- Lower concurrency (1)
+- Shorter log retention (7 days)
+- Scheduling disabled by default
+
+**Production (prod.tfvars)**:
+- Larger worker type (G.2X)
+- More workers (5)
+- Higher concurrency (3)
+- Longer log retention (30 days)
+- Scheduling enabled by default
 
 ## Best Practices
 

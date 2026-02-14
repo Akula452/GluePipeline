@@ -182,6 +182,10 @@ GluePipeline/
 │   ├── example-config.json         # Example configuration
 │   ├── demo.sh                     # Demo script
 │   └── docker-usage.sh             # Docker examples
+├── envconfig/
+│   └── aws/
+│       ├── dev.tfvars              # Development environment variables
+│       └── prod.tfvars             # Production environment variables
 └── terraform/
     └── aws/
         ├── main.tf                 # Main Terraform configuration
@@ -208,12 +212,21 @@ The `terraform/aws/` directory contains Terraform configuration for deploying AW
 
 ```bash
 cd terraform/aws
-cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your configuration
+
+# For development environment
 terraform init
-terraform plan
-terraform apply
+terraform plan -var-file="../../envconfig/aws/dev.tfvars"
+terraform apply -var-file="../../envconfig/aws/dev.tfvars"
+
+# For production environment
+terraform init
+terraform plan -var-file="../../envconfig/aws/prod.tfvars"
+terraform apply -var-file="../../envconfig/aws/prod.tfvars"
 ```
+
+Environment-specific configuration files are located in `envconfig/aws/`:
+- `dev.tfvars` - Development environment settings
+- `prod.tfvars` - Production environment settings
 
 See [terraform/aws/README.md](terraform/aws/README.md) for detailed documentation.
 
