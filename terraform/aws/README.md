@@ -349,14 +349,14 @@ You can create additional environment configurations:
 - Fewer workers (2)
 - Lower concurrency (1)
 - Shorter log retention (7 days)
-- Scheduling disabled by default
+- Scheduling disabled
 
 **Production (prod.tfvars)**:
 - Larger worker type (G.2X)
 - More workers (5)
 - Higher concurrency (3)
 - Longer log retention (30 days)
-- Scheduling enabled by default
+- Scheduling enabled
 
 ## Best Practices
 

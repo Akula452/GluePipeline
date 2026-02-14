@@ -50,7 +50,7 @@ db_username         = "dev-db-username"
 enable_schedule = false
 # job_schedule and trigger_enabled are defined for reference but not active when enable_schedule is false
 # To enable scheduling in dev, set enable_schedule to true
-job_schedule    = "cron(0 12 * * ? *)" # Daily at 12:00 UTC
+job_schedule    = "cron(0 12 * * ? *)" # Daily at 12:00 PM UTC (noon)
 trigger_enabled = false  # Disabled to match enable_schedule
 
 # CloudWatch Configuration
