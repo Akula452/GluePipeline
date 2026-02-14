@@ -121,9 +121,11 @@ aws s3 cp your-etl-script.py s3://${BUCKET_NAME}/scripts/etl_job.py
 | `jdbc_connection_url` | JDBC connection URL | Yes |
 | `db_username` | Database username | Yes |
 | `db_password` | Database password | Yes |
-| `security_group_ids` | Security group IDs | Yes |
-| `subnet_id` | Subnet ID for connection | Yes |
-| `availability_zone` | Availability zone | Yes |
+| `security_group_ids` | Security group IDs | No (required for VPC connectivity) |
+| `subnet_id` | Subnet ID for connection | No (required for VPC connectivity) |
+| `availability_zone` | Availability zone | No (required for VPC connectivity) |
+
+**Note**: Network configuration (`security_group_ids`, `subnet_id`, `availability_zone`) is optional. If provided, the Glue connection will use VPC networking. If omitted, it will use public connectivity (ensure your database allows public access).
 
 ### Scheduling Configuration
 

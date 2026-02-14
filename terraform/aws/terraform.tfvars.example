@@ -35,14 +35,15 @@ additional_job_arguments = {
 
 # SQL Connection Configuration
 jdbc_connection_url = "jdbc:postgresql://your-db-endpoint.region.rds.amazonaws.com:5432/yourdb"
-db_username         = "admin"
+db_username         = "your-db-username"
 # db_password should be set via environment variable or secrets manager
 # export TF_VAR_db_password="your-secure-password"
 
-# Network Configuration for Glue Connection
-availability_zone  = "us-east-1a"
-security_group_ids = ["sg-xxxxxxxxx"]
-subnet_id          = "subnet-xxxxxxxxx"
+# Network Configuration for Glue Connection (Optional - for VPC connectivity)
+# Uncomment and configure if your database is in a VPC
+# availability_zone  = "us-east-1a"
+# security_group_ids = ["sg-xxxxxxxxx"]
+# subnet_id          = "subnet-xxxxxxxxx"
 
 # Scheduling Configuration
 enable_schedule = false
