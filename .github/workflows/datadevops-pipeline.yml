@@ -265,7 +265,7 @@ jobs:
       working-directory: terraform/aws/glue
       run: |
         echo "🚀 Applying Terraform changes..."
-        # Note: auto-approve is safe here because environment protection (line 204-205)
+        # Note: auto-approve is safe here because environment protection (configured above)
         # allows configuration of manual approval gates before this job runs
         terraform apply -auto-approve "${{ env.PLAN_FILE }}"
         echo "✅ Terraform apply completed successfully"
