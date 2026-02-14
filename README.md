@@ -181,7 +181,8 @@ The workflow now includes automatic Terraform deployment:
 
 The workflow uses AWS credentials stored as GitHub Secrets for secure deployment. See [GITHUB_SECRETS_SETUP.md](GITHUB_SECRETS_SETUP.md) for detailed instructions on configuring:
 - `AWS_ACCESS_KEY_ID` - AWS Access Key ID
-- `AWS_SECRET_ACCESS_KEY` - AWS Secret Access Key  
+- `AWS_SECRET_ACCESS_KEY` - AWS Secret Access Key
+- `AWS_ACCOUNT_ID` - Your 12-digit AWS Account ID (required for Terraform)
 - `AWS_REGION` - AWS Region (optional, defaults to us-east-1)
 - `DB_PASSWORD` - Database password for Glue SQL connections
 

@@ -56,3 +56,12 @@ Thumbs.db
 # AWS
 .aws/
 *.zip
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars.local
+.terraformrc
+terraform.rc

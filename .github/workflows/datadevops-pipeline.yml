@@ -214,11 +214,12 @@ jobs:
       name: terraform-${{ github.ref_name }}
     
     # Configure AWS credentials as repository secrets:
-    # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, DB_PASSWORD
+    # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ACCOUNT_ID, AWS_REGION, DB_PASSWORD
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+      TF_VAR_aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
       TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
     
     steps:
@@ -251,6 +252,7 @@ jobs:
         echo "⚠️  Note: Ensure AWS credentials are configured as repository secrets:"
         echo "  - AWS_ACCESS_KEY_ID"
         echo "  - AWS_SECRET_ACCESS_KEY"
+        echo "  - AWS_ACCOUNT_ID (your 12-digit AWS account ID)"
         echo "  - AWS_REGION (optional, defaults to us-east-1)"
         echo "  - DB_PASSWORD (for database connection)"
     
@@ -301,11 +303,12 @@ jobs:
       name: ${{ github.event.inputs.terraform_action != 'plan' && format('terraform-{0}-{1}', github.event.inputs.terraform_action, github.event.inputs.environment) || '' }}
     
     # Configure AWS credentials as repository secrets:
-    # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+    # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ACCOUNT_ID, AWS_REGION, DB_PASSWORD
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+      TF_VAR_aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
       TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
     
     steps:
@@ -327,6 +330,7 @@ jobs:
         echo "⚠️  Note: Ensure AWS credentials are configured as repository secrets:"
         echo "  - AWS_ACCESS_KEY_ID"
         echo "  - AWS_SECRET_ACCESS_KEY"
+        echo "  - AWS_ACCOUNT_ID (your 12-digit AWS account ID)"
         echo "  - AWS_REGION (optional, defaults to us-east-1)"
         echo "  - DB_PASSWORD (for database connection)"
     
