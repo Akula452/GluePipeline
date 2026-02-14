@@ -22,6 +22,15 @@ on:
           - dev
           - prod
         default: 'dev'
+      terraform_action:
+        description: 'Terraform action to perform'
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+        default: 'plan'
 
 env:
   DOCKER_IMAGE: gluepipeline-cli
@@ -193,13 +202,17 @@ jobs:
         echo "Commit: ${{ github.sha }}"
         echo "Deployment ready"
 
-  # Terraform deployment job (manual trigger only)
-  terraform-deploy:
-    name: Deploy Terraform Infrastructure
+  # Terraform action job (manual trigger only)
+  terraform-action:
+    name: Terraform ${{ github.event.inputs.terraform_action }} - ${{ github.event.inputs.terraform_module }}
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
+    
+    # Configure environment-based approval for apply and destroy actions
+    environment:
+      name: ${{ github.event.inputs.terraform_action != 'plan' && format('terraform-{0}-{1}', github.event.inputs.terraform_action, github.event.inputs.environment) || '' }}
     
     # Configure AWS credentials as repository secrets:
     # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
@@ -218,8 +231,9 @@ jobs:
       with:
         terraform_version: 1.5.0
     
-    - name: Display deployment configuration
+    - name: Display configuration
       run: |
+        echo "Terraform Action: ${{ github.event.inputs.terraform_action }}"
         echo "Terraform Module: ${{ github.event.inputs.terraform_module }}"
         echo "Environment: ${{ github.event.inputs.environment }}"
         echo "Working Directory: terraform/aws/${{ github.event.inputs.terraform_module }}"
@@ -239,15 +253,40 @@ jobs:
       run: terraform validate
     
     - name: Terraform Plan
+      if: github.event.inputs.terraform_action == 'plan'
+      working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
+      run: |
+        terraform plan -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars"
+    
+    - name: Terraform Plan Summary
+      if: github.event.inputs.terraform_action == 'plan'
+      run: |
+        echo "✅ Terraform plan completed successfully"
+        echo "📋 Review the plan above"
+        echo ""
+        echo "To apply these changes, trigger the workflow with 'apply' action"
+    
+    - name: Terraform Apply
+      if: github.event.inputs.terraform_action == 'apply'
       working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
       run: |
         terraform plan -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars" -out=tfplan
+        terraform apply -auto-approve tfplan
     
-    - name: Terraform Plan Summary
+    - name: Terraform Apply Summary
+      if: github.event.inputs.terraform_action == 'apply'
+      run: |
+        echo "✅ Terraform apply completed successfully"
+        echo "🚀 Infrastructure has been deployed"
+    
+    - name: Terraform Destroy
+      if: github.event.inputs.terraform_action == 'destroy'
       working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
       run: |
-        echo "✅ Terraform plan completed successfully"
-        echo "📋 Review the plan above before applying"
-        echo ""
-        echo "⚠️  Note: This workflow only runs 'terraform plan' for safety."
-        echo "To apply changes, you need to manually run 'terraform apply' with proper AWS credentials and approvals."
+        terraform destroy -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars" -auto-approve
+    
+    - name: Terraform Destroy Summary
+      if: github.event.inputs.terraform_action == 'destroy'
+      run: |
+        echo "✅ Terraform destroy completed successfully"
+        echo "🗑️  Infrastructure has been destroyed"
