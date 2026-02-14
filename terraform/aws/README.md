@@ -325,7 +325,7 @@ If Glue cannot connect to the database:
 
 Check CloudWatch logs for detailed error messages:
 ```bash
-aws logs tail /aws-glue/jobs/output/[job-name] --follow
+aws logs tail /aws-glue/jobs/[job-name] --follow
 ```
 
 Common issues:

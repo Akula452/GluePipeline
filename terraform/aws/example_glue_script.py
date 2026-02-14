@@ -31,7 +31,7 @@ print(f"Using connection: {args['connection_name']}")
 # Read data from SQL database using Glue connection
 print(f"Reading data from table: {args['source_table']}")
 datasource = glueContext.create_dynamic_frame.from_options(
-    connection_type="postgresql",  # Change to mysql, sqlserver, etc. as needed
+    connection_type="postgresql",  # Must match your JDBC URL: postgresql, mysql, sqlserver, oracle, redshift
     connection_options={
         "useConnectionProperties": "true",
         "dbtable": args['source_table'],
