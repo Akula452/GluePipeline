@@ -106,10 +106,10 @@ jobs:
     
     - name: Test with Docker Compose
       run: |
-        docker-compose build
-        docker-compose run --rm gluepipeline-cli --help
-        docker-compose run --rm gluepipeline-cli init --name compose-test --environment dev
-        docker-compose run --rm gluepipeline-cli status
+        docker compose build
+        docker compose run --rm gluepipeline-cli --help
+        docker compose run --rm gluepipeline-cli init --name compose-test --environment dev
+        docker compose run --rm gluepipeline-cli status
 
   validate:
     name: Validate Configuration
