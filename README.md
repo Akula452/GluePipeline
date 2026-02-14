@@ -158,6 +158,7 @@ The repository includes a GitHub Actions workflow (`.github/workflows/datadevops
 - Tests Docker Compose configuration
 - Validates pipeline configurations
 - Deploys to production (on main/dev branches)
+- **Deploys Terraform infrastructure automatically** (on main/dev branches)
 
 ### Workflow Triggers
 
@@ -165,12 +166,24 @@ The repository includes a GitHub Actions workflow (`.github/workflows/datadevops
 - Pull requests to `main` or `dev`
 - Manual workflow dispatch
 
+### Terraform Deployment
+
+The workflow now includes automatic Terraform deployment:
+
+- **Automatic Deployment**: Terraform infrastructure is automatically deployed when pushing to `main` or `dev` branches
+- **Environment Selection**: 
+  - `main` branch → deploys to **prod** environment
+  - `dev` branch → deploys to **dev** environment
+- **Manual Deployment**: Use workflow dispatch for custom deployments with module and environment selection
+- **Pipeline Stages**: Terraform deployment runs after all validation and build stages complete successfully
+
 ### AWS Credentials Configuration
 
 The workflow uses AWS credentials stored as GitHub Secrets for secure deployment. See [GITHUB_SECRETS_SETUP.md](GITHUB_SECRETS_SETUP.md) for detailed instructions on configuring:
 - `AWS_ACCESS_KEY_ID` - AWS Access Key ID
 - `AWS_SECRET_ACCESS_KEY` - AWS Secret Access Key  
 - `AWS_REGION` - AWS Region (optional, defaults to us-east-1)
+- `DB_PASSWORD` - Database password for Glue SQL connections
 
 ## 📂 Project Structure
 

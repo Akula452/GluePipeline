@@ -24,17 +24,22 @@ The following secrets must be configured in your GitHub repository settings:
 ### 1. AWS_ACCESS_KEY_ID
 - **Description**: Your AWS Access Key ID for authentication
 - **Required**: Yes
-- **Used in**: Deploy job in CI/CD pipeline
+- **Used in**: Deploy and Terraform deployment jobs in CI/CD pipeline
 
 ### 2. AWS_SECRET_ACCESS_KEY
 - **Description**: Your AWS Secret Access Key for authentication
 - **Required**: Yes
-- **Used in**: Deploy job in CI/CD pipeline
+- **Used in**: Deploy and Terraform deployment jobs in CI/CD pipeline
 
 ### 3. AWS_REGION (Optional)
 - **Description**: AWS region for your Glue operations
 - **Required**: No (defaults to `us-east-1`)
 - **Example values**: `us-east-1`, `us-west-2`, `eu-west-1`, etc.
+
+### 4. DB_PASSWORD
+- **Description**: Database password for Glue SQL connections
+- **Required**: Yes (for Terraform deployments that include database connections)
+- **Used in**: Terraform deployment job for configuring Glue database connections
 
 ## How to Add Secrets to GitHub
 
@@ -119,5 +124,6 @@ Use the GitHub UI (Settings → Secrets and variables → Actions) to add these 
 | `AWS_ACCESS_KEY_ID` | Your AWS Access Key ID | `AKIA...` (20 characters) | ✅ Yes |
 | `AWS_SECRET_ACCESS_KEY` | Your AWS Secret Access Key | 40 characters | ✅ Yes |
 | `AWS_REGION` | AWS region for operations | `us-east-1`, `us-west-2`, etc. | ❌ No (defaults to `us-east-1`) |
+| `DB_PASSWORD` | Database password for Glue connections | Secure password string | ✅ Yes (for Terraform) |
 
 **Remember**: These secrets are available to workflows on ALL branches (main, dev, int, copilot/**, etc.) once added to the repository settings.
