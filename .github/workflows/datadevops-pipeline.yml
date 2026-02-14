@@ -193,9 +193,92 @@ jobs:
         echo "Commit: ${{ github.sha }}"
         echo "Deployment ready"
 
-  # Terraform deployment job (manual trigger only)
+  # Terraform deployment job (automatic on main/dev branches)
   terraform-deploy:
     name: Deploy Terraform Infrastructure
+    runs-on: ubuntu-latest
+    needs: [build, docker-build, docker-compose-test, validate]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    permissions:
+      contents: read
+    environment:
+      name: terraform-${{ github.ref_name }}
+    
+    # Configure AWS credentials as repository secrets:
+    # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, DB_PASSWORD
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+      TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
+    
+    - name: Set environment based on branch
+      id: set-env
+      run: |
+        if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+          echo "environment=prod" >> $GITHUB_OUTPUT
+        else
+          echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          echo "environment=dev" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Display deployment configuration
+      run: |
+        echo "Terraform Module: glue"
+        echo "Environment: ${{ env.ENVIRONMENT }}"
+        echo "Working Directory: terraform/aws/glue"
+        echo "Branch: ${{ github.ref_name }}"
+        echo ""
+        echo "⚠️  Note: Ensure AWS credentials are configured as repository secrets:"
+        echo "  - AWS_ACCESS_KEY_ID"
+        echo "  - AWS_SECRET_ACCESS_KEY"
+        echo "  - AWS_REGION (optional, defaults to us-east-1)"
+        echo "  - DB_PASSWORD (for database connection)"
+    
+    - name: Terraform Init
+      working-directory: terraform/aws/glue
+      run: terraform init
+    
+    - name: Terraform Validate
+      working-directory: terraform/aws/glue
+      run: terraform validate
+    
+    - name: Terraform Plan
+      working-directory: terraform/aws/glue
+      run: |
+        # Create a unique plan file for this run
+        PLAN_FILE="tfplan-${{ github.run_id }}-${{ github.run_attempt }}"
+        terraform plan -var-file="../../../envconfig/aws/${{ env.ENVIRONMENT }}.tfvars" -out="${PLAN_FILE}"
+        echo "PLAN_FILE=${PLAN_FILE}" >> $GITHUB_ENV
+    
+    - name: Terraform Apply
+      working-directory: terraform/aws/glue
+      run: |
+        echo "🚀 Applying Terraform changes..."
+        # Note: auto-approve is safe here because environment protection (configured above)
+        # allows configuration of manual approval gates before this job runs
+        terraform apply -auto-approve "${{ env.PLAN_FILE }}"
+        echo "✅ Terraform apply completed successfully"
+    
+    - name: Terraform Output
+      working-directory: terraform/aws/glue
+      run: |
+        echo "📋 Terraform Outputs:"
+        terraform output
+
+  # Terraform deployment job (manual trigger with custom options)
+  terraform-deploy-manual:
+    name: Deploy Terraform Infrastructure (Manual)
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     permissions:
@@ -241,13 +324,20 @@ jobs:
     - name: Terraform Plan
       working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
       run: |
-        terraform plan -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars" -out=tfplan
+        # Create a unique plan file for this run
+        PLAN_FILE="tfplan-${{ github.run_id }}-${{ github.run_attempt }}"
+        terraform plan -var-file="../../../envconfig/aws/${{ github.event.inputs.environment }}.tfvars" -out="${PLAN_FILE}"
+        echo "PLAN_FILE=${PLAN_FILE}" >> $GITHUB_ENV
     
-    - name: Terraform Plan Summary
+    - name: Terraform Apply
       working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
       run: |
-        echo "✅ Terraform plan completed successfully"
-        echo "📋 Review the plan above before applying"
-        echo ""
-        echo "⚠️  Note: This workflow only runs 'terraform plan' for safety."
-        echo "To apply changes, you need to manually run 'terraform apply' with proper AWS credentials and approvals."
+        echo "🚀 Applying Terraform changes..."
+        terraform apply -auto-approve "${{ env.PLAN_FILE }}"
+        echo "✅ Terraform apply completed successfully"
+    
+    - name: Terraform Output
+      working-directory: terraform/aws/${{ github.event.inputs.terraform_module }}
+      run: |
+        echo "📋 Terraform Outputs:"
+        terraform output
