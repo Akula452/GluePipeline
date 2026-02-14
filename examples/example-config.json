@@ -1,0 +1,26 @@
+{
+  "pipeline_name": "example-etl-pipeline",
+  "created_at": "2026-02-14T00:00:00",
+  "environment": "dev",
+  "glue_version": "3.0",
+  "jobs": [
+    {
+      "name": "data-ingestion",
+      "script": "s3://my-bucket/scripts/ingest.py",
+      "type": "glueetl",
+      "added_at": "2026-02-14T00:00:00"
+    },
+    {
+      "name": "data-transformation",
+      "script": "s3://my-bucket/scripts/transform.py",
+      "type": "glueetl",
+      "added_at": "2026-02-14T00:00:00"
+    },
+    {
+      "name": "data-quality-check",
+      "script": "s3://my-bucket/scripts/quality.py",
+      "type": "glueetl",
+      "added_at": "2026-02-14T00:00:00"
+    }
+  ]
+}

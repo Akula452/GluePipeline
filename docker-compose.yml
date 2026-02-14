@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  gluepipeline-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gluepipeline-cli:latest
+    container_name: gluepipeline-cli
+    volumes:
+      - ./workspace:/workspace
+      - ./scripts:/scripts:ro
+    environment:
+      - GLUE_CONFIG=/workspace/config.json
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    networks:
+      - gluepipeline-network
+
+  # Optional: Add a development container with hot-reload
+  gluepipeline-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gluepipeline-cli:dev
+    container_name: gluepipeline-dev
+    volumes:
+      - .:/app
+      - ./workspace:/workspace
+    environment:
+      - GLUE_CONFIG=/workspace/config.json
+      - PYTHONUNBUFFERED=1
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+    networks:
+      - gluepipeline-network
+
+networks:
+  gluepipeline-network:
+    driver: bridge
