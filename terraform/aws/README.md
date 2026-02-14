@@ -31,9 +31,11 @@ terraform/aws/
 ├── terraform.tfvars.example   # Example variables file
 └── README.md                  # This file
 
-envconfig/aws/
-├── dev.tfvars                 # Development environment variables
-└── prod.tfvars                # Production environment variables
+envconfig/
+├── README.md                  # Environment configuration guide
+└── aws/
+    ├── dev.tfvars             # Development environment variables
+    └── prod.tfvars            # Production environment variables
 ```
 
 ## Quick Start
